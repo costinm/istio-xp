@@ -1,0 +1,754 @@
+{
+  "listeners": [
+    {
+      "address": "tcp://0.0.0.0:80",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "stat_prefix": "http",
+            "rds": {
+              "cluster": "rds",
+              "route_config_name": "80",
+              "refresh_delay_ms": 1000
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "mixer",
+                "config": {
+                  "mixer_server": "istio-mixer:9091",
+                  "mixer_attributes": {
+                    "target.ip": "10.68.1.43",
+                    "target.service": "hello.lt.svc.cluster.local,hellolb.lt.svc.cluster.local",
+                    "target.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "forward_attributes": {
+                    "source.ip": "10.68.1.43",
+                    "source.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "quota_name": "RequestCount"
+                }
+              },
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ],
+            "access_log": [
+              {
+                "path": "/dev/stdout"
+              }
+            ]
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://0.0.0.0:8080",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "stat_prefix": "http",
+            "rds": {
+              "cluster": "rds",
+              "route_config_name": "8080",
+              "refresh_delay_ms": 1000
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "mixer",
+                "config": {
+                  "mixer_server": "istio-mixer:9091",
+                  "mixer_attributes": {
+                    "target.ip": "10.68.1.43",
+                    "target.service": "hello.lt.svc.cluster.local,hellolb.lt.svc.cluster.local",
+                    "target.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "forward_attributes": {
+                    "source.ip": "10.68.1.43",
+                    "source.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "quota_name": "RequestCount"
+                }
+              },
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ],
+            "access_log": [
+              {
+                "path": "/dev/stdout"
+              }
+            ]
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://0.0.0.0:9102",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "stat_prefix": "http",
+            "rds": {
+              "cluster": "rds",
+              "route_config_name": "9102",
+              "refresh_delay_ms": 1000
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "mixer",
+                "config": {
+                  "mixer_server": "istio-mixer:9091",
+                  "mixer_attributes": {
+                    "target.ip": "10.68.1.43",
+                    "target.service": "hello.lt.svc.cluster.local,hellolb.lt.svc.cluster.local",
+                    "target.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "forward_attributes": {
+                    "source.ip": "10.68.1.43",
+                    "source.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "quota_name": "RequestCount"
+                }
+              },
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ],
+            "access_log": [
+              {
+                "path": "/dev/stdout"
+              }
+            ]
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.68.1.43:80",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "stat_prefix": "http",
+            "route_config": {
+              "virtual_hosts": [
+                {
+                  "name": "hellolb.lt.svc.cluster.local|http",
+                  "domains": [
+                    "hellolb:80",
+                    "hellolb",
+                    "hellolb.lt:80",
+                    "hellolb.lt",
+                    "hellolb.lt.svc:80",
+                    "hellolb.lt.svc",
+                    "hellolb.lt.svc.cluster:80",
+                    "hellolb.lt.svc.cluster",
+                    "hellolb.lt.svc.cluster.local:80",
+                    "hellolb.lt.svc.cluster.local",
+                    "10.71.240.103:80",
+                    "10.71.240.103",
+                    "10.68.1.43:80",
+                    "10.68.1.43"
+                  ],
+                  "routes": [
+                    {
+                      "prefix": "/",
+                      "cluster": "in.80",
+                      "opaque_config": {
+                        "mixer_control": "on",
+                        "mixer_forward": "off"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "mixer",
+                "config": {
+                  "mixer_server": "istio-mixer:9091",
+                  "mixer_attributes": {
+                    "target.ip": "10.68.1.43",
+                    "target.service": "hello.lt.svc.cluster.local,hellolb.lt.svc.cluster.local",
+                    "target.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "forward_attributes": {
+                    "source.ip": "10.68.1.43",
+                    "source.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "quota_name": "RequestCount"
+                }
+              },
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ],
+            "access_log": [
+              {
+                "path": "/dev/stdout"
+              }
+            ]
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.68.1.43:80",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "stat_prefix": "http",
+            "route_config": {
+              "virtual_hosts": [
+                {
+                  "name": "hello.lt.svc.cluster.local|http",
+                  "domains": [
+                    "hello:80",
+                    "hello",
+                    "hello.lt:80",
+                    "hello.lt",
+                    "hello.lt.svc:80",
+                    "hello.lt.svc",
+                    "hello.lt.svc.cluster:80",
+                    "hello.lt.svc.cluster",
+                    "hello.lt.svc.cluster.local:80",
+                    "hello.lt.svc.cluster.local",
+                    "10.71.244.43:80",
+                    "10.71.244.43",
+                    "10.68.1.43:80",
+                    "10.68.1.43"
+                  ],
+                  "routes": [
+                    {
+                      "prefix": "/",
+                      "cluster": "in.80",
+                      "opaque_config": {
+                        "mixer_control": "on",
+                        "mixer_forward": "off"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "mixer",
+                "config": {
+                  "mixer_server": "istio-mixer:9091",
+                  "mixer_attributes": {
+                    "target.ip": "10.68.1.43",
+                    "target.service": "hello.lt.svc.cluster.local,hellolb.lt.svc.cluster.local",
+                    "target.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "forward_attributes": {
+                    "source.ip": "10.68.1.43",
+                    "source.uid": "kubernetes://hello-3937151068-fkmjx.lt"
+                  },
+                  "quota_name": "RequestCount"
+                }
+              },
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ],
+            "access_log": [
+              {
+                "path": "/dev/stdout"
+              }
+            ]
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.244.120:9125",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.161a58bc2b67fe8cecf0db3adf3ec3c043af1836",
+                  "destination_ip_list": [
+                    "10.71.244.120/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.247.77:9090",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.4dd797b534833878cbc64004ec1167b5fd307596",
+                  "destination_ip_list": [
+                    "10.71.247.77/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.248.251:9125",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.dfa119ad09da143ae9997c90c325858f3250d118",
+                  "destination_ip_list": [
+                    "10.71.248.251/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.248.34:80",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.9b67047dd9435c584ea213eb4d1eb3dea5003d6c",
+                  "destination_ip_list": [
+                    "10.71.248.34/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:42422",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.cae5f679e10479358be4b45652d1da568b7376fa",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:8080",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.988fbeb1b6fdfc2c3c7c786ebc0ba6b6ec617b9e",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:9001",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.f182e52b1df5732318c15d73689b84c69b985f21",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:9090",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.f1a4ab69f6c98f407a83d5d16e6b3eb2f6e9c421",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:9094",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.df5e1e552bb8964502986ff268cb71b7cbde32fb",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.138:9102",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.a7aa02294e8b301c5f59fce9bcd275c51f3b26ca",
+                  "destination_ip_list": [
+                    "10.71.253.138/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.214:42422",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.539cce3974a4d8dc6760353d723470bcb6df538f",
+                  "destination_ip_list": [
+                    "10.71.253.214/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.214:9091",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.8b362b5af6ad515761f47d275c28d703a02cde28",
+                  "destination_ip_list": [
+                    "10.71.253.214/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://10.71.253.214:9094",
+      "filters": [
+        {
+          "type": "read",
+          "name": "tcp_proxy",
+          "config": {
+            "stat_prefix": "tcp",
+            "route_config": {
+              "routes": [
+                {
+                  "cluster": "out.1d79e62eb86d5ecea3dc8bee49680b1819020d92",
+                  "destination_ip_list": [
+                    "10.71.253.214/32"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "bind_to_port": false
+    },
+    {
+      "address": "tcp://0.0.0.0:15001",
+      "filters": [],
+      "bind_to_port": true,
+      "use_original_dst": true
+    }
+  ],
+  "admin": {
+    "access_log_path": "/dev/stdout",
+    "address": "tcp://0.0.0.0:15000"
+  },
+  "cluster_manager": {
+    "clusters": [
+      {
+        "name": "in.80",
+        "connect_timeout_ms": 1000,
+        "type": "static",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://127.0.0.1:80"
+          }
+        ]
+      },
+      {
+        "name": "out.161a58bc2b67fe8cecf0db3adf3ec3c043af1836",
+        "service_name": "statsdx.lt.svc.cluster.local|udpstatsd",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.1d79e62eb86d5ecea3dc8bee49680b1819020d92",
+        "service_name": "istio-mixer.lt.svc.cluster.local|configapi",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.4dd797b534833878cbc64004ec1167b5fd307596",
+        "service_name": "prometheus.lt.svc.cluster.local",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.539cce3974a4d8dc6760353d723470bcb6df538f",
+        "service_name": "istio-mixer.lt.svc.cluster.local|prometheus",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.8b362b5af6ad515761f47d275c28d703a02cde28",
+        "service_name": "istio-mixer.lt.svc.cluster.local|tcp",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.988fbeb1b6fdfc2c3c7c786ebc0ba6b6ec617b9e",
+        "service_name": "nginx.lt.svc.cluster.local|manager",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.9b67047dd9435c584ea213eb4d1eb3dea5003d6c",
+        "service_name": "istio-egress.lt.svc.cluster.local",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.a7aa02294e8b301c5f59fce9bcd275c51f3b26ca",
+        "service_name": "nginx.lt.svc.cluster.local|envoystatsd",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.cae5f679e10479358be4b45652d1da568b7376fa",
+        "service_name": "nginx.lt.svc.cluster.local|mixerprom",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.df5e1e552bb8964502986ff268cb71b7cbde32fb",
+        "service_name": "nginx.lt.svc.cluster.local|mixerconf",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.dfa119ad09da143ae9997c90c325858f3250d118",
+        "service_name": "envoy-statsd.lt.svc.cluster.local|udp",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.f182e52b1df5732318c15d73689b84c69b985f21",
+        "service_name": "nginx.lt.svc.cluster.local|envoyadmin",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "out.f1a4ab69f6c98f407a83d5d16e6b3eb2f6e9c421",
+        "service_name": "nginx.lt.svc.cluster.local|prom",
+        "connect_timeout_ms": 1000,
+        "type": "sds",
+        "lb_type": "round_robin"
+      },
+      {
+        "name": "rds",
+        "connect_timeout_ms": 1000,
+        "type": "strict_dns",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://istio-manager:8080"
+          }
+        ]
+      }
+    ],
+    "sds": {
+      "cluster": {
+        "name": "sds",
+        "connect_timeout_ms": 1000,
+        "type": "strict_dns",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://istio-manager:8080"
+          }
+        ]
+      },
+      "refresh_delay_ms": 1000
+    },
+    "cds": {
+      "cluster": {
+        "name": "cds",
+        "connect_timeout_ms": 1000,
+        "type": "strict_dns",
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://istio-manager:8080"
+          }
+        ]
+      },
+      "refresh_delay_ms": 1000
+    }
+  }
+}
