@@ -1,0 +1,62 @@
+# Accepts statsd reports, pulled by prom
+# Uses /metrics
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: statsdx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: statsdx
+    spec:
+      containers:
+      - name: app
+        image: prom/statsd-exporter
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statsdx
+  labels:
+    app: statsdx
+spec:
+  ports:
+  - port: 9102
+    targetPort: 9102
+    name: http
+  - port: 9125
+    targetPort: 9125
+    name: udpstatsd
+  selector:
+    app: statsdx
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-statsd-istio
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /metrics
+        backend:
+          serviceName: statsdx
+          servicePort: 9102
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-statsd
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /metrics
+        backend:
+          serviceName: statsdx
+          servicePort: 9102

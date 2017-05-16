@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /hello
+        backend:
+          serviceName: hello
+          servicePort: 80
+---
+# Will route to hello (direct)
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: justhello
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /justhello
+        backend:
+          serviceName: justhello
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: prometheus
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /graph/*
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: servicegraph
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /dotviz
+        backend:
+          serviceName: servicegraph
+          servicePort: 8088
+      - path: /js/viz/*
+        backend:
+          serviceName: servicegraph
+          servicePort: 8088
+---

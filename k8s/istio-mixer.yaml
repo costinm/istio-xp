@@ -1,0 +1,322 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mixer-configsubjects
+data:
+  rules.yml: |-
+    # Config-map
+    subject: namespace:ns
+    revision: "2022"
+    rules:
+    - selector: # must be empty for preprocessing adapters
+      aspects:
+      # when running local without a kubeconfig file specified in globalconfig,
+      # this aspect should be commented out. It is only needed when the attributes
+      # it produces are needed elsewhere in the config.
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mixer-config2
+data:
+  adapters.yml: |-
+    # Config-map
+    subject: global
+    adapters:
+      #      - name: default
+      #        kind: quotas
+      #        impl: memQuota
+      #        params:
+      #      - name: default
+      #        impl: stdioLogger
+      #        params:
+      ##          logStream: STDERR
+      #- name: prometheus
+      #  kind: metrics
+      #  impl: prometheus
+      # params:
+      - name: default
+        impl: denyChecker
+          #      - name: default
+          #        kind: attributes
+          #        impl: kubernetes
+          #        params:
+          # when running from mixer root, use the following config after adding a
+          # symbolic link to a kubernetes config file via:
+          #
+          # $ ln -s ~/.kube/config adapter/kubernetes/kubeconfig
+          #
+          # kubeconfig_path: "adapter/kubernetes/kubeconfig"
+
+  descriptors.yml: |-
+    subject: namespace:ns
+    revision: "2022"
+    manifests:
+      - name: kubernetes
+        revision: "1"
+        attributes:
+          source.ip:
+            valueType: IP_ADDRESS
+          source.labels:
+            valueType: STRING_MAP
+          source.name:
+            valueType: STRING
+          source.namespace:
+            valueType: STRING
+          source.service:
+            valueType: STRING
+          source.serviceAccount:
+            valueType: STRING
+          target.ip:
+            valueType: IP_ADDRESS
+          target.labels:
+            valueType: STRING_MAP
+          target.name:
+            valueType: STRING
+          target.namespace:
+            valueType: STRING
+          target.service:
+            valueType: STRING
+          target.serviceAccount:
+            valueType: STRING
+      - name: istio-proxy
+        revision: "1"
+        attributes:
+          origin.ip:
+            valueType: IP_ADDRESS
+          origin.uid:
+            valueType: STRING
+          origin.user:
+            valueType: STRING
+          request.headers:
+            valueType: STRING_MAP
+          request.id:
+            valueType: STRING
+          request.host:
+            valueType: STRING
+          request.method:
+            valueType: STRING
+          request.path:
+            valueType: STRING
+          request.reason:
+            valueType: STRING
+          request.referer:
+            valueType: STRING
+          request.scheme:
+            valueType: STRING
+          request.size:
+            valueType: INT64
+          request.time:
+            valueType: TIMESTAMP
+          request.useragent:
+            valueType: STRING
+          response.code:
+            valueType: INT64
+          response.duration:
+            valueType: DURATION
+          response.headers:
+            valueType: STRING_MAP
+          response.latency:
+            valueType: DURATION
+          response.size:
+            valueType: INT64
+          response.time:
+            valueType: TIMESTAMP
+          source.uid:
+            valueType: STRING
+          target.uid:
+            valueType: STRING
+          # DEPRECATED, to be removed. Use request.useragent instead.
+          request.user-agent:
+            valueType: STRING
+    # Enums as struct fields can be symbolic names.
+    # However enums inside maps *cannot* be symbolic names.
+    metrics:
+      - name: request_count
+        kind: COUNTER
+        value: INT64
+        description: request count by source, target, service, and code
+        labels:
+          source: 1 # STRING
+          target: 1 # STRING
+          service: 1 # STRING
+          method: 1 # STRING
+          response_code: 2 # INT64
+      - name: request_duration
+        kind: DISTRIBUTION
+        value: DURATION
+        description: request duration by source, target, and service
+        buckets:
+          explicit_buckets:
+            bounds: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+        # Examples of other possible bucket configurations:
+        #      linear_buckets:
+        #         num_finite_buckets: 10
+        #         offset: 0.001
+        #         width: 0.1
+        #      exponential_buckets:
+        #        num_finite_buckets: 15
+        #        scale: 0.001
+        #        growth_factor: 4
+        labels:
+          source: 1 # STRING
+          target: 1 # STRING
+          service: 1 # STRING
+          method: 1 # STRING
+          response_code: 2 # INT64
+      - name: request_size
+        kind: DISTRIBUTION
+        value: INT64
+        description: request size by source, target, and service
+        buckets:
+          exponentialBuckets:
+            numFiniteBuckets: 8
+            scale: 1
+            growthFactor: 10
+        # Examples of other possible bucket configurations:
+        #      explicit_buckets:
+        #         bounds: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+        #      linear_buckets:
+        #         num_finite_buckets: 10
+        #         offset: 0.001
+        #         width: 0.1
+        labels:
+          source: 1 # STRING
+          target: 1 # STRING
+          service: 1 # STRING
+          method: 1 # STRING
+          response_code: 2 # INT64
+      - name: response_size
+        kind: DISTRIBUTION
+        value: INT64
+        description: response size by source, target, and service
+        buckets:
+          exponentialBuckets:
+            numFiniteBuckets: 8
+            scale: 1
+            growthFactor: 10
+        # Examples of other possible bucket configurations:
+        #      explicitBuckets:
+        #         bounds: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+        #      linearBuckets:
+        #         numFiniteBuckets: 10
+        #         offset: 0.001
+        #         width: 0.1
+        labels:
+          source: 1 # STRING
+          target: 1 # STRING
+          service: 1 # STRING
+          method: 1 # STRING
+          response_code: 2 # INT64
+    #quotas:
+    #  - name: RequestCount
+    #    rate_limit: false
+    logs:
+      - name: accesslog.common
+        display_name: Apache Common Log Format
+        payload_format: TEXT
+        log_template: '{{or (.originIp) "-"}} - {{or (.sourceUser) "-"}} [{{or (.timestamp.Format "02/Jan/2006:15:04:05 -0700") "-"}}] "{{or (.method) "-"}} {{or (.url) "-"}} {{or (.protocol) "-"}}" {{or (.responseCode) "-"}} {{or (.responseSize) "-"}}'
+        labels:
+          originIp: 6 # IP_ADDRESS
+          sourceUser: 1 # STRING
+          timestamp: 5 # TIMESTAMP
+          method: 1 # STRING
+          url: 1 # STRING
+          protocol: 1 # STRING
+          responseCode: 2 # INT64
+          responseSize: 2 # INT64
+      - name: accesslog.combined
+        display_name: Apache Combined Log Format
+        payload_format: TEXT
+        log_template: '{{or (.originIp) "-"}} - {{or (.sourceUser) "-"}} [{{or (.timestamp.Format "02/Jan/2006:15:04:05 -0700") "-"}}] "{{or (.method) "-"}} {{or (.url) "-"}} {{or (.protocol) "-"}}" {{or (.responseCode) "-"}} {{or (.responseSize) "-"}} {{or (.referer) "-"}} {{or (.userAgent) "-"}}'
+        labels:
+          originIp: 6 # IP_ADDRESS
+          sourceUser: 1 # STRING
+          timestamp: 5 # TIMESTAMP
+          method: 1 # STRING
+          url: 1 # STRING
+          protocol: 1 # STRING
+          responseCode: 2 # INT64
+          responseSize: 2 # INT64
+          referer: 1 # STRING
+          userAgent: 1 # STRING
+
+---
+# Mixer
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-mixer
+  labels:
+    istio: mixer
+spec:
+  ports:
+  - name: tcp
+    port: 9091
+  - name: configapi
+    port: 9094
+  - name: prometheus
+    port: 42422
+  selector:
+    istio: mixer
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: istio-mixer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        alpha.istio.io/sidecar: ignore
+      labels:
+        istio: mixer
+    spec:
+      containers:
+      - name: mixer
+        #image: costinm/istio:latest
+        #image: gcr.io/costin-istio/mixer:4e04af79-1240-4897-af4f-639f0b6c0ebc
+        #image: docker.io/istio/mixer:latest
+        image: docker.io/costinm/mixer_debug:latest
+        imagePullPolicy: Always
+        #image: docker.io/istio/mixer:2017-05-02-07.29.33
+        #imagePullPolicy: IfNotPresent
+        lifecycle:
+            postStart:
+              exec:
+#                command: ["/bin/sh", "-c", "rm /etc/opt/mixer/configroot/scopes/global/adapters.yml; ln -s /etc/opt/mixer2/configroot/scopes/global/adapters.yml /etc/opt/mixer/configroot/scopes/global/adapters.yml; cp /etc/opt/mixer2/configroot/scopes/global/descriptors.yml /etc/opt/mixer/configroot/scopes/global/descriptors.yml" ]
+#                command: ["/bin/sh", "-c", "cp /etc/opt/mixer2/configroot/scopes/global/adapters.yml /etc/opt/mixer/configroot/scopes/global/adapters.yml; cp /etc/opt/mixer2/configroot/scopes/global/descriptors.yml /etc/opt/mixer/configroot/scopes/global/descriptors.yml" ]
+                command: ["/bin/sh", "-c", "cp /etc/opt/mixer2/configroot/scopes/global/adapters.yml /etc/opt/mixer/configroot/scopes/global/adapters.yml; cp /etc/opt/mixer2/configroot/scopes/global/descriptors.yml /etc/opt/mixer/configroot/scopes/global/descriptors.yml; cp /etc/opt/mixer2/configroot/scopes/subjects/rules.yml /etc/opt/mixer/configroot/scopes/global/subjects/global/rules.yml" ]
+        resources:
+          requests:
+            cpu: "1500m"
+            memory: "1G"
+          limits:
+            cpu: "2"
+            memory: "2G"
+        ports:
+        - containerPort: 9091
+        - containerPort: 9094
+        - containerPort: 42422
+        args:
+          - --configStoreURL=fs:///etc/opt/mixer/configroot
+          - --logtostderr=true
+          - -v=0
+          - --stderrthreshold=10
+          - --maxConcurrentStreams=3000
+        volumeMounts:
+          - mountPath: /etc/opt/mixer2/configroot/scopes/subjects
+            name: configsubjects
+          - mountPath: /etc/opt/mixer2/configroot/scopes/global
+            name: config
+      volumes:
+        - name: config
+          configMap:
+            name: mixer-config2
+        - name: configsubjects
+          configMap:
+            name: mixer-configsubjects
+---
+
